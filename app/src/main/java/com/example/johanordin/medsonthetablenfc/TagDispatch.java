@@ -54,14 +54,15 @@ public class TagDispatch extends Activity {
         IntentFilter ndefIntent = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
         try {
             ndefIntent.addDataType("*/*");
-            mIntentFilters = new IntentFilter[] { ndefIntent };
+            mIntentFilters = new IntentFilter[]{ndefIntent};
         } catch (Exception e) {
             Log.e("TagDispatch", e.toString());
         }
 
-        mNFCTechLists = new String[][] { new String[] { NfcF.class.getName() } };
+        mNFCTechLists = new String[][]{new String[]{NfcF.class.getName()}};
 
     }
+
     @Override
     public void onNewIntent(Intent intent) {
         String action = intent.getAction();
@@ -72,16 +73,19 @@ public class TagDispatch extends Activity {
         // parse through all NDEF messages and their records and pick text type only
         Parcelable[] data = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 
+        String utf_8 = "UTF-8";
+        String utf_16 = "UTF-16";
+
         if (data != null) {
             try {
                 for (int i = 0; i < data.length; i++) {
-                    NdefRecord [] recs = ((NdefMessage)data[i]).getRecords();
+                    NdefRecord[] recs = ((NdefMessage) data[i]).getRecords();
                     for (int j = 0; j < recs.length; j++)
                         if (recs[j].getTnf() == NdefRecord.TNF_WELL_KNOWN &&
                                 Arrays.equals(recs[j].getType(), NdefRecord.RTD_TEXT)) {
 
                             byte[] payload = recs[j].getPayload();
-                            String textEncoding = ((payload[0] & 0200) == 0) ? "UTF-8" : "UTF-16";
+                            String textEncoding = ((payload[0] & 0200) == 0) ?  utf_8 : utf_16;
                             int langCodeLen = payload[0] & 0077;
 
                             s += ("\n\nNdefMessage[" + i + "], NdefRecord[" + j + "]:\n\"" +
@@ -114,9 +118,6 @@ public class TagDispatch extends Activity {
         if (mNfcAdapter != null)
             mNfcAdapter.disableForegroundDispatch(this);
     }
-
-
-
 
 
 }

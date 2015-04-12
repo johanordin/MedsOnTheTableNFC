@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.johanordin.medsonthetablenfc">
 
+
+    <!-- Near field communications permissions -->
     <uses-permission android:name="android.permission.NFC"></uses-permission>
-
     <uses-sdk android:minSdkVersion="10"></uses-sdk>
-
     <uses-feature
         android:name="android.hardware.nfc"
         android:required="true"></uses-feature>
@@ -32,7 +32,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
 
 
     </application>

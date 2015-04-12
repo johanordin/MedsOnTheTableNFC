@@ -16,17 +16,13 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        Button btag = (Button)findViewById(
+        Button btag = (Button) findViewById(
                 R.id.buttontag
         );
         btag.setOnClickListener(new View.OnClickListener() {
-            //@Override
+            @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, TagDispatch.class ));
-
-
-
+                startActivity(new Intent(MainActivity.this, TagDispatch.class));
             }
         });
 
@@ -41,12 +37,12 @@ public class MainActivity extends Activity {
 
 
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
     }
 
