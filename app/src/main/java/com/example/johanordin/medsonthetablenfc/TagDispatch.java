@@ -94,6 +94,9 @@ public class TagDispatch extends Activity {
                                     new String(payload, langCodeLen + 1,
                                             payload.length - langCodeLen - 1, textEncoding) +
                                     "\"");
+                            String messageOnTag =  new String(payload, langCodeLen + 1, payload.length - langCodeLen - 1, textEncoding);
+                            System.out.println("Loggar Meddelande: " + messageOnTag);
+                            Log.d(TAG, "String: " + s);
                         }
                 }
             } catch (Exception e) {
