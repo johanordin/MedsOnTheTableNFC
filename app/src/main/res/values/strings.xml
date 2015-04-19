@@ -3,4 +3,8 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="add_medicine">Lägg till</string>
+    <string name="decision">Vill du lägga till läkemedlet du scannat in?</string>
+    <string name="rescan_medicine">Scanna igen</string>
+    <string name="toastmsg_rescan_medicine">Lägg ett nytt läkemedel mot backsidan av surfplattan</string>
 </resources>

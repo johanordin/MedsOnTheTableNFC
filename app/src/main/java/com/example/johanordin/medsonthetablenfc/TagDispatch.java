@@ -1,7 +1,10 @@
 package com.example.johanordin.medsonthetablenfc;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NdefMessage;
@@ -12,8 +15,10 @@ import android.nfc.tech.NfcF;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,12 +54,12 @@ public class TagDispatch extends Activity {
         this.setContentView(R.layout.tagdispatch);
 
         //setContentView(R.layout.tagdispatch);
-        mTextView = (TextView)findViewById(R.id.tv);
+        mTextView = (TextView) findViewById(R.id.tv);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
         if (mNfcAdapter != null) {
-            mTextView.setText("Read an NFC tag");
+            mTextView.setText("Lägg ett läkemedel mot baksidan av surfplattan.");
         } else {
             mTextView.setText("This phone is not NFC enabled.");
         }
@@ -67,12 +72,12 @@ public class TagDispatch extends Activity {
         IntentFilter ndefIntent = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
         try {
             ndefIntent.addDataType("*/*");
-            mIntentFilters = new IntentFilter[] { ndefIntent };
+            mIntentFilters = new IntentFilter[]{ndefIntent};
         } catch (Exception e) {
             Log.e(TAG, e.toString());
         }
 
-        mNFCTechLists = new String[][] { new String[] { NfcF.class.getName() } };
+        mNFCTechLists = new String[][]{new String[]{NfcF.class.getName()}};
     }
 
     @Override
@@ -108,9 +113,8 @@ public class TagDispatch extends Activity {
                                     "\"");
 
 
-                            messageOnTag =  new String(payload, langCodeLen + 1, payload.length - langCodeLen - 1, textEncoding);
+                            messageOnTag = new String(payload, langCodeLen + 1, payload.length - langCodeLen - 1, textEncoding);
                             System.out.println("Loggar Meddelande: " + messageOnTag);
-
 
 
                             Log.d(TAG, "String: " + s);
@@ -134,6 +138,10 @@ public class TagDispatch extends Activity {
 
             // lagg till skicka vidare till webbView
             medsList.add(messageOnTag);
+
+
+            //Visa dialog
+            open();
         }
 
         Iterator<String> itr = medsList.iterator();
@@ -144,12 +152,13 @@ public class TagDispatch extends Activity {
 
 
 
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
+        Log.d(TAG, "onResume this an Log::-->");
         if (mNfcAdapter != null)
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, mIntentFilters, mNFCTechLists);
     }
@@ -162,5 +171,42 @@ public class TagDispatch extends Activity {
             mNfcAdapter.disableForegroundDispatch(this);
     }
 
+    public void open() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage(R.string.decision);
+
+        alertDialogBuilder.setPositiveButton(R.string.add_medicine, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent toWebViewActivity = new Intent(getApplicationContext(), MainActivity.class);
+                //startActivity(new Intent(TagDispatch.class, MainActivity.this));
+            }
+        });
+        alertDialogBuilder.setNegativeButton(R.string.rescan_medicine, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //Intent toWebViewActivity = new Intent(getApplicationContext(), TagDispatch.class);
+                //startActivity(MainActivity);
+                //finish();
+
+                // Relunch the current activity for collection a new medicine.
+                Intent intent = getIntent();
+                finish();
+                startActivity(intent);
+
+                // Show a helping text
+                Context context = getApplicationContext();
+                CharSequence text = getString(R.string.toastmsg_rescan_medicine);
+                int duration = Toast.LENGTH_SHORT;
+
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+            }
+
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
 
 }

@@ -3,16 +3,17 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/BLACK">
+    android:background="@color/BLACK"
+    android:weightSum="1">
 
 
     <TextView
         android:id="@+id/tv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="204dp"
 
         android:gravity="center_vertical"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/WHITE"/>
+        android:textColor="@color/WHITE" />
 
 </LinearLayout>
