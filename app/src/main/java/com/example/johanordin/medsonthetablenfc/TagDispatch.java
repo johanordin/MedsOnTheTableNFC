@@ -15,7 +15,10 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class for read a NFC tag
@@ -25,12 +28,15 @@ public class TagDispatch extends Activity {
 
     private static final String TAG = "TagDispatch";
 
-
     private TextView mTextView;
     private NfcAdapter mNfcAdapter;
     private PendingIntent mPendingIntent;
     private IntentFilter[] mIntentFilters;
     private String[][] mNFCTechLists;
+
+    List<String> medsList = new ArrayList<String>();
+
+    String messageOnTag;
 
 
     @Override
@@ -41,7 +47,6 @@ public class TagDispatch extends Activity {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //set content view AFTER ABOVE sequence (to avoid crash)
         this.setContentView(R.layout.tagdispatch);
-
 
         //setContentView(R.layout.tagdispatch);
         mTextView = (TextView)findViewById(R.id.tv);
@@ -101,8 +106,13 @@ public class TagDispatch extends Activity {
                                     new String(payload, langCodeLen + 1,
                                             payload.length - langCodeLen - 1, textEncoding) +
                                     "\"");
-                            String messageOnTag =  new String(payload, langCodeLen + 1, payload.length - langCodeLen - 1, textEncoding);
+
+
+                            messageOnTag =  new String(payload, langCodeLen + 1, payload.length - langCodeLen - 1, textEncoding);
                             System.out.println("Loggar Meddelande: " + messageOnTag);
+
+
+
                             Log.d(TAG, "String: " + s);
                         }
                 }
@@ -113,6 +123,27 @@ public class TagDispatch extends Activity {
         }
 
         mTextView.setText(s);
+
+
+        if (medsList.contains(messageOnTag)) {
+            // Du har redan scannat in Medicinen. VIll du lagga till den iaf??
+            // dvs dialog ruta ska visas
+            medsList.add(messageOnTag);
+
+        } else {
+
+            // lagg till skicka vidare till webbView
+            medsList.add(messageOnTag);
+        }
+
+        Iterator<String> itr = medsList.iterator();
+        while (itr.hasNext()) {
+            String element = itr.next();
+            System.out.printf(element + " " + "%n");
+        }
+
+
+
     }
 
     @Override
