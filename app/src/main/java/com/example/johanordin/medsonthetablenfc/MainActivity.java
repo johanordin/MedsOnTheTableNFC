@@ -16,8 +16,10 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         Log.d(TAG, "onCreate in ::-->");
+
+        // pass us to the nfc scanning state
+        startActivity(new Intent(MainActivity.this, TagDispatch.class));
 
         Button btag = (Button) findViewById(
                 R.id.buttontag
@@ -26,11 +28,10 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                System.out.println("OnClick MainActivity");
+                Log.d(TAG, "onClick in ::-->");
                 startActivity(new Intent(MainActivity.this, TagDispatch.class));
             }
         });
-        System.out.println("OnCreate MainActivity");
 
     }
 

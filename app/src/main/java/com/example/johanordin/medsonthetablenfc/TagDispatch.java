@@ -12,6 +12,7 @@ import android.nfc.tech.NfcF;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import java.util.Arrays;
@@ -36,7 +37,13 @@ public class TagDispatch extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.tagdispatch);
+        //Remove notification bar
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //set content view AFTER ABOVE sequence (to avoid crash)
+        this.setContentView(R.layout.tagdispatch);
+
+
+        //setContentView(R.layout.tagdispatch);
         mTextView = (TextView)findViewById(R.id.tv);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
