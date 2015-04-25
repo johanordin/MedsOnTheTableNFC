@@ -7,4 +7,5 @@
     <string name="decision">Vill du lägga till läkemedlet du scannat in?</string>
     <string name="rescan_medicine">Scanna igen</string>
     <string name="toastmsg_rescan_medicine">Lägg ett nytt läkemedel mot backsidan av surfplattan</string>
+    <string name="title_activity_webview">WebviewActivity</string>
 </resources>

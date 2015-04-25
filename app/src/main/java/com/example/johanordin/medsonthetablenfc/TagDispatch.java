@@ -15,7 +15,6 @@ import android.nfc.tech.NfcF;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,13 +33,13 @@ public class TagDispatch extends Activity {
     private static final String TAG = "TagDispatch";
 
     private TextView mTextView;
+
     private NfcAdapter mNfcAdapter;
     private PendingIntent mPendingIntent;
     private IntentFilter[] mIntentFilters;
     private String[][] mNFCTechLists;
 
     List<String> medsList = new ArrayList<String>();
-
     String messageOnTag;
 
 
@@ -55,6 +54,7 @@ public class TagDispatch extends Activity {
 
         //setContentView(R.layout.tagdispatch);
         mTextView = (TextView) findViewById(R.id.tv);
+        mTextView.setVisibility(mTextView.GONE);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
@@ -86,7 +86,6 @@ public class TagDispatch extends Activity {
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
         String s = action + "\n\n" + tag.toString();
-        Log.d(TAG, "onPause this an Log::-->");
         System.out.println("onNewIntent: --> " + s);
 
         // parse through all NDEF messages and their records and pick text type only
@@ -112,10 +111,8 @@ public class TagDispatch extends Activity {
                                             payload.length - langCodeLen - 1, textEncoding) +
                                     "\"");
 
-
                             messageOnTag = new String(payload, langCodeLen + 1, payload.length - langCodeLen - 1, textEncoding);
                             System.out.println("Loggar Meddelande: " + messageOnTag);
-
 
                             Log.d(TAG, "String: " + s);
                         }
@@ -135,10 +132,8 @@ public class TagDispatch extends Activity {
             medsList.add(messageOnTag);
 
         } else {
-
             // lagg till skicka vidare till webbView
             medsList.add(messageOnTag);
-
 
             //Visa dialog
             open();
@@ -149,9 +144,6 @@ public class TagDispatch extends Activity {
             String element = itr.next();
             System.out.printf(element + " " + "%n");
         }
-
-
-
 
     }
 
@@ -178,8 +170,8 @@ public class TagDispatch extends Activity {
         alertDialogBuilder.setPositiveButton(R.string.add_medicine, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Intent toWebViewActivity = new Intent(getApplicationContext(), MainActivity.class);
-                //startActivity(new Intent(TagDispatch.class, MainActivity.this));
+                Intent toWebViewActivity = new Intent(TagDispatch.this, WebviewActivity.class);
+                startActivity(toWebViewActivity);
             }
         });
         alertDialogBuilder.setNegativeButton(R.string.rescan_medicine, new DialogInterface.OnClickListener() {
