@@ -15,7 +15,10 @@ import android.nfc.tech.NfcF;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +35,10 @@ public class TagDispatch extends Activity {
 
     private static final String TAG = "TagDispatch";
 
-    private TextView mTextView;
+    public static final String BASE_URL = "http://site-medsonthetable.openshift.ida.liu.se/";
+
+    //private TextView mTextView;
+    private WebView browser;
 
     private NfcAdapter mNfcAdapter;
     private PendingIntent mPendingIntent;
@@ -46,6 +52,7 @@ public class TagDispatch extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate is called :: -->");
 
         //Remove notification bar
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -53,16 +60,26 @@ public class TagDispatch extends Activity {
         this.setContentView(R.layout.tagdispatch);
 
         //setContentView(R.layout.tagdispatch);
-        mTextView = (TextView) findViewById(R.id.tv);
-        mTextView.setVisibility(mTextView.GONE);
+        // TODO: rename tv in XML-file -->
+        browser = (WebView) findViewById(R.id.tv);
+        browser.setWebViewClient(new WebBrowser());
+        browser.getSettings().setLoadsImagesAutomatically(true);
+        browser.getSettings().setJavaScriptEnabled(true);
+        browser.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
 
+        // dont show the browser initially
+        browser.setVisibility(browser.GONE);
+
+        // Create a NFC
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
+        /*
         if (mNfcAdapter != null) {
             mTextView.setText("Lägg ett läkemedel mot baksidan av surfplattan.");
         } else {
             mTextView.setText("This phone is not NFC enabled.");
         }
+        */
 
         // create an intent with tag data and deliver to this activity
         mPendingIntent = PendingIntent.getActivity(this, 0,
@@ -82,6 +99,9 @@ public class TagDispatch extends Activity {
 
     @Override
     public void onNewIntent(Intent intent) {
+        //browser.setVisibility(browser.GONE);
+        Log.d(TAG, "onNewIntent is called :: -->");
+
         String action = intent.getAction();
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
@@ -123,22 +143,25 @@ public class TagDispatch extends Activity {
 
         }
 
-        mTextView.setText(s);
+        //mTextView.setText(s);
 
+        //Visa dialog
+        open();
 
+        // TODO: investigate if we should check if it should be possible to compare identical meds
+        /*
         if (medsList.contains(messageOnTag)) {
             // Du har redan scannat in Medicinen. VIll du lagga till den iaf??
             // dvs dialog ruta ska visas
-            medsList.add(messageOnTag);
-
         } else {
             // lagg till skicka vidare till webbView
             medsList.add(messageOnTag);
-
             //Visa dialog
             open();
         }
+        */
 
+        // Loop through the list with meds
         Iterator<String> itr = medsList.iterator();
         while (itr.hasNext()) {
             String element = itr.next();
@@ -150,30 +173,42 @@ public class TagDispatch extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume this an Log::-->");
-        if (mNfcAdapter != null)
+        Log.d(TAG, "onResume is called :: -->");
+        if (mNfcAdapter != null) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, mIntentFilters, mNFCTechLists);
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause this an Log::-->");
-        if (mNfcAdapter != null)
+        Log.d(TAG, "onPause is called :: -->");
+        if (mNfcAdapter != null) {
             mNfcAdapter.disableForegroundDispatch(this);
+        }
     }
 
     public void open() {
+        Log.d(TAG, "open() is called :: -->");
+        browser.setVisibility(browser.GONE);
+
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setMessage(R.string.decision);
 
+        // Add medicine
         alertDialogBuilder.setPositiveButton(R.string.add_medicine, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Intent toWebViewActivity = new Intent(TagDispatch.this, WebviewActivity.class);
+
+                /*Intent toWebViewActivity = new Intent(TagDispatch.this, WebviewActivity.class);
                 startActivity(toWebViewActivity);
+                */
+                medsList.add(messageOnTag);
+                browser.loadUrl(BASE_URL + "med/" + messageOnTag);
+                browser.setVisibility(browser.VISIBLE);
             }
         });
+        // Rescan
         alertDialogBuilder.setNegativeButton(R.string.rescan_medicine, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -194,11 +229,19 @@ public class TagDispatch extends Activity {
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();
             }
-
         });
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
+    }
+
+
+    private class WebBrowser extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
     }
 
 }

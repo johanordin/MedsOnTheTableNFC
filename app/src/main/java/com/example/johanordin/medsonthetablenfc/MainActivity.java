@@ -7,16 +7,21 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 
 public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
 
+    private TextView textView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d(TAG, "onCreate in ::-->");
+
+        textView = (TextView)findViewById(R.id.textView);
+        textView.setText("Meds on the table");
 
         // pass us to the nfc scanning state
         startActivity(new Intent(MainActivity.this, TagDispatch.class));
